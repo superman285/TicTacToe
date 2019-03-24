@@ -7,7 +7,6 @@ script:
   - npm test
   - npm run build
 after_script:
-  - ll
   - git init
   - git config --global user.name 'superman285'
   - git config --global user.name 'superman285@126.com'
