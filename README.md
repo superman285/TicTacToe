@@ -1,4 +1,4 @@
-# TicTacToe Game
+# TicTacToe New
 
 ## Project setup
 ```
