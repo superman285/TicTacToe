@@ -12,7 +12,7 @@ after_success:
   - git config --global user.email 'superman285@126.com'
   - git add .
   - git commit -m "rebuild TicTacToe project,update the dist directory"
-  - git push --force "https://${GITHUB_TOKEN}@${GITHUB_REPO}" master
+  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}" master
 
 env:
   global:
