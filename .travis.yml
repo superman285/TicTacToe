@@ -8,11 +8,13 @@ script:
   - npm test
   - npm run build
 after_success:
+  - git status -sb
   - git config --global user.name 'superman285'
   - git config --global user.email 'superman285@126.com'
   - git add .
   - git commit -m "rebuild TicTacToe project,update the dist directory"
-  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}" master
+  - git status -sb
+  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}"
 
 env:
   global:
