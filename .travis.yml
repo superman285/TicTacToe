@@ -14,8 +14,8 @@ after_success:
   - git add .
   - git commit -m "rebuild TicTacToe project,update the dist directory"
   - git status -sb
-  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}"
+  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}" HEAD:master
 
 env:
   global:
-    - GITHUB_REPO: github.com/superman285/TicTacToe.git HEAD:master
+    - GITHUB_REPO: github.com/superman285/TicTacToe.git
