@@ -18,4 +18,4 @@ after_success:
 
 env:
   global:
-    - GITHUB_REPO: github.com/superman285/TicTacToe.git
+    - GITHUB_REPO: github.com/superman285/TicTacToe.git HEAD:master
