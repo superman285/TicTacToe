@@ -3,3 +3,16 @@ node_js: "11"
 addons:
   chrome: stable
 sudo: required
+script:
+  - npm run build
+after_script:
+  - git init
+  - git config --global user.name 'superman285'
+  - git config --global user.name 'superman285@126.com'
+  - git add .
+  - git commit -m "rebuild TicTacToe project,update the dist directory"
+  - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}" master:master
+
+env:
+  global:
+    - GITHUB_REPO: github.com/superman285/TicTacToe.git
