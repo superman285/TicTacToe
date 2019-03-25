@@ -12,17 +12,17 @@ contract TicTacToe {
     address payable public activePlayer;
     address public victorPlayer;
 
-    bool public gameRunning;
+    bool private gameRunning;
 
 
     string public gameResult;
 
-    uint8 public chessboardSize = 3;
-    string[3][3] public chessboard;
+    uint8 private chessboardSize = 3;
+    string[3][3] private chessboard;
 
     //"O"(host) or "X"(guest)
-    mapping(address => string) public playerChess;
-    mapping(address => uint8) public movesCount;
+    mapping(address => string) private playerChess;
+    mapping(address => uint8) private movesCount;
 
     event PlayerJoined(address playerAddr);
     event ActivePlayer(address activePlayerAddr);
