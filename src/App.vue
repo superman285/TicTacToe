@@ -32,8 +32,9 @@ export default {
     ChessBoard
   },
   mounted: function(){
+    //绑web3报错
     this.$store.state.web3 = window.web3;
-    console.log('aftermounted',this.$store.state.web3);
+    console.log('aftermounted',window.web3==this.$store.state.web3);
   },
   data:()=>({
       activePlayer1: "HostPlayer"

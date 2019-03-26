@@ -20,14 +20,14 @@ window.addEventListener("load", function() {
     alert("No web3 detected. Please go to download the metamask");
     window.location.href="https://metamask.io/";
 // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7777"));
   }
 
   //store.state.web3 = web3;
-
   new Vue({
     router,
     store,
     render: h => h(App)
   }).$mount("#app");
+
 })

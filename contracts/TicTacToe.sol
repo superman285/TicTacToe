@@ -13,35 +13,40 @@ contract TicTacToe {
     address public victorPlayer;
 
     bool private gameRunning;
-
-
-    string public gameResult;
+    bool private gameCreated;
 
     uint8 private chessboardSize = 3;
     string[3][3] private chessboard;
-
     //"O"(host) or "X"(guest)
     mapping(address => string) private playerChess;
     mapping(address => uint8) private movesCount;
 
+    string public gameResult;
+
+    event GameCreated(address creatorAddr);
     event PlayerJoined(address playerAddr);
     event ActivePlayer(address activePlayerAddr);
     event GameFinished(string gameResult, address victor);
     event VictoryAward(address receiver, uint amount);
 
-    constructor() public payable{
-        require(msg.value == gameCost, "creator must send gameCost to the contract!");
-        hostPlayer = msg.sender;
+    constructor() public{
         gameRunning = false;
-        playerChess[hostPlayer] = "O";
     }
 
     function getWholeBoard() public view returns (string[3][3] memory){
-
         return chessboard;
     }
 
+    function createGame() public payable {
+        require(msg.value == gameCost, "creator must send gameCost to create the game");
+        hostPlayer = msg.sender;
+        gameCreated = true;
+        playerChess[hostPlayer] = "O";
+        emit GameCreated(hostPlayer);
+    }
+
     function joinGame() public payable {
+        require(gameCreated,"game must be created first!");
         require(msg.sender != hostPlayer, "gameCreator cannot join the game");
         require(guestPlayer == address(0), "guestPlayer already exist");
         require(msg.value == gameCost, "gameJoiner must send gameCost to the contract");
