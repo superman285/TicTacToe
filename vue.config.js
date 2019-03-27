@@ -7,7 +7,5 @@ module.exports = {
   },
   productionSourceMap: false,
 
-  configureWebpack: {
-
-  }
+  configureWebpack: {}
 };

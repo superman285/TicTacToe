@@ -4,22 +4,27 @@
     <i class="gameRules"></i>
 
     <section>
-      <button class="createGame btnStyle">CreateGame</button>
-      <button class="joinGame btnStyle">JoinGame</button>
+      <button class="createGame btnStyle" @click="createGame">CreateGame</button>
+      <button class="joinGame btnStyle" @click="joinGame">JoinGame</button>
     </section>
     <section>
-      <label class="gameCost">GameCost: {{$store.state.gameCost}}</label>
+      <label class="gameCost">GameCost: {{ $store.state.gameCost }}</label>
 
       <!--奖池 tooltip 赢了的拿走-->
-      <label class="bonuspool">💰</label>
+      <label class="bonuspool" @click="showbonuspool">💰</label>
+      <p v-if="showpool">{{bonuspool}}</p>
+
     </section>
     <!--加tooltip显示地址-->
-    <label class="actPlayer">{{$store.state.activePlayer}}</label>
-
+    <label class="actPlayer">
+      {{$store.getters.activeTurn}}
+      <br>
+      {{$store.state.activePlayer}}
+    </label>
 
     <Chess-board></Chess-board>
 
-    <button class="restart btnStyle">Restart</button>
+    <button class="restart btnStyle" @click="restartGame">Restart</button>
   </div>
 </template>
 
@@ -31,18 +36,63 @@ export default {
   components: {
     ChessBoard
   },
-  mounted: function(){
-    //绑web3报错
+  mounted: function() {
+    //绑web3报错https://cn.vuejs.org/v2/api/#data
+    //vue和web3的冲突
+    // 以 _ 或 $ 开头的属性 不会 被 Vue 实例代理，因为它们可能和 Vue 内置的属性、API 方法冲突。你可以使用例如 vm.$data._property 的方式访问这些属性。
     this.$store.state.web3 = window.web3;
-    console.log('aftermounted',window.web3==this.$store.state.web3);
+    console.log("aftermounted", window.web3 == this.$store.state.web3);
   },
-  data:()=>({
-      activePlayer1: "HostPlayer"
+  data: () => ({
+      showpool: false,
+      bonuspool: 1
   }),
   computed: {
-    activePlayer2:function(){
-      return this.activePlayer1+1;
-    }
+
+  },
+  methods: {
+    async showbonuspool(){
+      console.log('click showbonus');
+      this.bonuspool = await this.$store.dispatch("getBonuspool");
+      this.showpool = true;
+    },
+    async getWholeBoard() {
+      let wholeBoard = await this.$store.dispatch("getWholeBoard");
+      console.log("wholeboard", wholeBoard);
+    },
+    async getBonuspool() {
+      let bonuspool = await this.$store.dispatch("getBonuspool");
+      console.log("bonuspool", bonuspool);
+    },
+    async getGameCost() {
+      let gameCost = await this.$store.dispatch('getGameCost');
+      console.log('gameCost',gameCost);
+    },
+    async getActivePlayer() {
+      let activePlayer = await this.$store.dispatch("getActivePlayer");
+      console.log('activePlayer',activePlayer);
+    },
+    async createGame() {
+      let creator = this.$store.getters.currentAccount;
+      console.log("creator", creator);
+      let createRes = await this.$store.dispatch("createGame");
+      console.log("createRes", createRes);
+    },
+    async joinGame() {
+      let joiner = this.$store.getters.currentAccount;
+      console.log("joiner", joiner);
+      let joinRes = await this.$store.dispatch("joinGame", joiner);
+      console.log("joinRes", joinRes);
+      console.log('activePlayer',joinRes.events.ActivePlayer.returnValues.activePlayerAddr,this.$store.state.activePlayer);
+    },
+
+    async restartGame() {
+      let restarter = this.$store.getters.currentAccount;
+      console.log("restarter", restarter);
+      let restartRes = await this.$store.dispatch("restartGame", restarter);
+    },
+
+
   }
 };
 </script>
@@ -122,7 +172,7 @@ h1 {
 }
 
 section {
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .btnStyle {
@@ -135,30 +185,29 @@ section {
   cursor: pointer !important;
   font-size: 1rem;
   font-weight: bold;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   &:hover {
     color: #715d77;
     background: hsl(50, 100%, 75%);
   }
 }
-  .actPlayer,.gameCost {
-    padding: 0.3em 0.5em;
-    border: 1px solid hsl(50, 100%, 75%);
-    background: transparent;
-    color: hsl(50, 100%, 75%);
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-top: .5rem;
-    &:hover {
-      color: #715d77;
-      background: hsl(50, 100%, 75%);
-    }
+.actPlayer,
+.gameCost {
+  padding: 0.3em 0.5em;
+  border: 1px solid hsl(50, 100%, 75%);
+  background: transparent;
+  color: hsl(50, 100%, 75%);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  &:hover {
+    color: #715d77;
+    background: hsl(50, 100%, 75%);
   }
+}
 
-  .gameRules {
-    position: absolute;
-
-  }
-
+.gameRules {
+  position: absolute;
+}
 </style>

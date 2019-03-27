@@ -24,8 +24,9 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
-const HDWalletProvider = require('truffle-hdwallet-provider');
-const privateKey = "93945E79D3FD4D0FDC60CB2C9031B2D8ACF3C688F3185C0730ED30D85C66B77F";
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const privateKey =
+  "93945E79D3FD4D0FDC60CB2C9031B2D8ACF3C688F3185C0730ED30D85C66B77F";
 const infuraKey = "ee8fd3f25eb3452d9a3211fcbbb18bc5";
 
 module.exports = {
@@ -54,13 +55,16 @@ module.exports = {
     },
 
     rinkeby: {
-      provider: () => new HDWalletProvider(privateKey, `https://rinkeby.infura.io/v3/${infuraKey}`),
-      network_id: 4,       // Ropsten's id
-      gas: 6000000,        // Ropsten has a lower block limit than mainnet
-      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
-      timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-
-    },
+      provider: () =>
+        new HDWalletProvider(
+          privateKey,
+          `https://rinkeby.infura.io/v3/${infuraKey}`
+        ),
+      network_id: 4, // Ropsten's id
+      gas: 6000000, // Ropsten has a lower block limit than mainnet
+      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 200 // # of blocks before a deployment times out  (minimum/default: 50)
+    }
 
     // Another network with more advanced options...
     // advanced: {

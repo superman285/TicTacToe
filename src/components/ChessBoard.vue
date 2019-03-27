@@ -2,7 +2,11 @@
   <div class="board">
     <div class="column" v-for="column in size">
       <div class="row" v-for="row in size">
-        <div class="piece" :data-pos="`${row - 1}-${column - 1}`" @click="setChess($event)">
+        <div
+          class="piece"
+          :data-pos="`${row - 1}-${column - 1}`"
+          @click="setChess($event)"
+        >
           <span class="icon"></span>
         </div>
       </div>
@@ -11,8 +15,6 @@
 </template>
 
 <script>
-
-
   export default {
     name: "ChessBoard",
     props: {
@@ -24,44 +26,155 @@
     data: () => (
       {}),
     methods: {
-      async setChess(ev, chess) {
+      async getWholeBoard() {
+        let wholeBoard = await this.$store.dispatch("getWholeBoard");
+        console.log("wholeboard", wholeBoard);
+      },
+      async getBonuspool() {
+        let bonuspool = await this.$store.dispatch("getBonuspool");
+        console.log("bonuspool", bonuspool);
+      },
+      async createGame() {
+        let creator = this.$store.getters.currentAccount;
+        console.log("creator", creator);
+        let createRes = await this.$store.dispatch("createGame");
+        console.log("createRes", createRes);
+      },
+      async joinGame() {
+        let joiner = this.$store.getters.currentAccount;
+        console.log("joiner", joiner);
+        let joinRes = await this.$store.dispatch("joinGame", joiner);
+        console.log("joinRes", joinRes);
+        console.log('activePlayer', joinRes.logs[1].args.activePlayerAddr);
+      },
+
+      async restartGame() {
+        let restarter = this.$store.getters.currentAccount;
+        console.log("restarter", restarter);
+        let restartRes = await this.$store.dispatch("restartGame", restarter);
+      },
+
+      async getActivePlayer() {
+        let activePlayer = await this.$store.dispatch("getActivePlayer");
+        console.log("activePlayer", activePlayer);
+      },
+      async getVictorPlayer() {
+        let victorPlayer = await this.$store.dispatch("getVictorPlayer");
+        console.log("victorPlayer", victorPlayer);
+      },
+      async getGameResult() {
+        let gameResult = await this.$store.dispatch("getGameResult");
+        console.log("gameResult", gameResult);
+      },
+
+      async setChess(ev) {
         console.dir(ev.target);
-        chess = "o"
-        let target = ev.target;
-        if (target.tagName == "DIV") {
-          target.classList.add(chess, 'animated', 'flash');
+
+        let actPlayer = this.$store.getters.currentAccount;
+        switch (actPlayer) {
+          case this.$store.state.hostPlayer:
+            var chess = "o";
+            break;
+          case this.$store.state.guestPlayer:
+            var chess = "x";
+            break;
+          /*default:
+            var chess = "o";*/
         }
-        /*setTimeout(() => {
-          target.classList.remove('animated', 'pulse')
-        }, 2000);*/
 
-        let row = target.dataset.pos.substr(0, 1),
-          column = target.dataset.pos.substr(2, 1);
+        /*
+        * 1.空棋盘 直接交易 下棋
+        * 2.棋格有棋子 点到span 直接无事发生
+        * 3.棋格有棋子 点到div 判断chessboard这个位置有棋 无事发生
+        *
+        * */
 
-        console.log(row, column);
+        var piece = ev.target;
+        //相当于if(piect.tagName==="DIV"){}
+        piece.tagName === "DIV" && (
+          async () => {
+            console.log('点击了div,进入判断');
+            var row = piece.dataset.pos.substr(0, 1),
+              column = piece.dataset.pos.substr(2, 1);
+            console.log(row, column);
+            if (this.$store.state.chessBoard[row][column]) {
+              console.log('这儿有棋子,不执行后续下棋行为');
+              return;
+            }
+
+            //避免连续点同一位置 先赋值了 如果后续下棋交易执行失败 catch中 把chessBoard位置再置空串
+            this.$store.state.chessBoard[row][column] = chess;
+            //交易出结果再把棋子放到棋盘
+            try {
+              var setChessRes = await this.$store.dispatch('setChess',{
+                row,
+                column,
+                player:actPlayer
+              });
+              console.log('setChessRes',setChessRes);
+
+            } catch (err) {
+              console.log('setChessErr',err);
+              this.$store.state.chessBoard[row][column] = "";
+            }
+            /*
+            根据setChessRes中的logs的event 可判断胜负了 logs[0].args.gameResult | 'tie' 'hostVictory' 'guestVictory'
+            if(tie | victory){
+            弹提示文字浮层
+            return;}
+            */
+            //棋子下到棋盘上
+            piece.classList.add(chess, "animated", "flash");
+            /*setTimeout(() => {
+            target.classList.remove('animated', 'pulse')
+            }, 3000);*/
+
+
+            if("GameFinished" in setChessRes.events){
+              var gameResult = setChessRes.events.GameFinished.returnValues.gameResult;
+              console.log('setChess=>gameResult',gameResult,setChessRes.events);
+              switch (gameResult) {
+                case "tie":
+                  console.log('阿平局啦');
+                  return;
+                  break;
+                case "hostVictory":
+                  console.log('啊 host胜利');
+                  return;
+                  break;
+                case "guestVictory":
+                  console.log('啊guest胜利');
+                  return;
+                  break;
+                default:
+                  console.log('gameresult是个啥',gameResult);
+              }
+            }
+
+            console.log('结局未出，切换轮次');
+            this.$store.state.activePlayer = setChessRes.events.ActivePlayer.returnValues.activePlayerAddr;
+            /*if(this.$store.state.activePlayer=="HostPlayer"){
+              this.$store.state.activePlayer="GuestPlayer";
+            }else {
+              this.$store.state.activePlayer="HostPlayer";
+            }*/
+
+          })();
 
         console.log(this.$store.state.web3);
 
-        let contractObj = this.$store.getContractInstance;
-        console.log('vue中拿obj', contractObj);
 
-        let chessboard = await this.$store.dispatch('getWholeBoard');
-        console.log('gameboard', chessboard);
-
-        console.log('当前user从vue', this.$store.getters.currentAccount);
-
-        let payload_creator = this.$store.getters.currentAccount;
-        let createRes = await this.$store.dispatch('createGame',payload_creator);
-        console.log('createGRes',createRes);
-
+        //获取合约实例
+        /*let contractObj = await this.$store.dispatch('getContractObj');
+        console.log('oldcontract',contractObj);
+        let newContract = await this.$store.dispatch("createGame");
+        console.log("newcontract", newContract);*/
       }
     }
   };
 </script>
 
 <style scoped lang="scss">
-
-
   :root {
     --bg-color: hsl(50, 100%, 75%);
     --cell-border-radius: 15%;
@@ -95,7 +208,6 @@
     flex-basis: 100%;
     border: 0.3em solid hsl(200, 100%, 75%);
     border-radius: 15%;
-
   }
 
   .piece {
@@ -112,27 +224,29 @@
   }
 
   .o {
-    box-shadow: inset 0.5em 0.5em 0.5em rgba(255, 255, 255, 0.5), inset -0.5em -0.5em 0.5em rgba(0, 0, 0, 0.35), 0 0 0.3em hsl(40, 100%, 25%);
+    box-shadow: inset 0.5em 0.5em 0.5em rgba(255, 255, 255, 0.5),
+    inset -0.5em -0.5em 0.5em rgba(0, 0, 0, 0.35), 0 0 0.3em hsl(40, 100%, 25%);
     background: hsl(110, 100%, 50%) linear-gradient(-45deg, hsl(110, 100%, 50%) 50%, rgba(255, 255, 255, 0.6));
   }
 
   .o > .icon::after {
-    content: '\0E836';
+    content: "\0E836";
   }
 
   .x {
-    box-shadow: inset 0.5em 0.5em 0.5em rgba(255, 255, 255, 0.5), inset -0.5em -0.5em 0.5em rgba(0, 0, 0, 0.35), 0 0 0.3em hsl(40, 100%, 25%);
+    box-shadow: inset 0.5em 0.5em 0.5em rgba(255, 255, 255, 0.5),
+    inset -0.5em -0.5em 0.5em rgba(0, 0, 0, 0.35), 0 0 0.3em hsl(40, 100%, 25%);
     background: hsl(10, 100%, 50%) linear-gradient(-45deg, hsl(10, 100%, 50%) 50%, rgba(255, 255, 255, 0.6));
   }
 
   .x > .icon::after {
-    content: '\0E5CD';
+    content: "\0E5CD";
   }
 
   .icon {
     display: inline-block;
     text-align: center;
-    font-family: 'icons';
+    font-family: "icons";
     font-size: 3.2em;
     font-weight: bold;
     text-shadow: 0 0 0.4rem white;
