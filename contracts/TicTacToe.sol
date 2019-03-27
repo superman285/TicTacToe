@@ -13,7 +13,6 @@ contract TicTacToe {
     address public victorPlayer;
 
     bool private gameRunning;
-    bool private gameCreated;
 
     uint8 private chessboardSize = 3;
     string[3][3] private chessboard;
@@ -29,24 +28,19 @@ contract TicTacToe {
     event GameFinished(string gameResult, address victor);
     event VictoryAward(address receiver, uint amount);
 
-    constructor() public{
+    constructor() public payable{
+        require(msg.value == gameCost, "creator must send gameCost to create the game");
         gameRunning = false;
+        hostPlayer = msg.sender;
+        playerChess[hostPlayer] = "O";
+        emit GameCreated(hostPlayer);
     }
 
     function getWholeBoard() public view returns (string[3][3] memory){
         return chessboard;
     }
 
-    function createGame() public payable {
-        require(msg.value == gameCost, "creator must send gameCost to create the game");
-        hostPlayer = msg.sender;
-        gameCreated = true;
-        playerChess[hostPlayer] = "O";
-        emit GameCreated(hostPlayer);
-    }
-
     function joinGame() public payable {
-        require(gameCreated,"game must be created first!");
         require(msg.sender != hostPlayer, "gameCreator cannot join the game");
         require(guestPlayer == address(0), "guestPlayer already exist");
         require(msg.value == gameCost, "gameJoiner must send gameCost to the contract");
@@ -96,6 +90,8 @@ contract TicTacToe {
         //上局赢家置空
         delete victorPlayer;
         delete gameResult;
+
+        emit GameCreated(hostPlayer);
     }
 
     function getBonuspool() public view returns (uint){
@@ -142,7 +138,7 @@ contract TicTacToe {
         delete activePlayer;
         emit GameFinished(gameResult, player);
         //发奖
-        emit VictoryAward(player,address(this).balance);
+        emit VictoryAward(player, address(this).balance);
         player.transfer(address(this).balance);
     }
 
@@ -164,7 +160,7 @@ contract TicTacToe {
         //玩家所在列 达到3个
         //Console.log("firstJudge", now);
         //uint8 row_count = 0;
-        for ((uint8 row, uint8 row_count) = (0,0); row < chessboardSize; row++) {
+        for ((uint8 row, uint8 row_count) = (0, 0); row < chessboardSize; row++) {
             if (keccak256(abi.encodePacked(chessboard[row][player_column])) == keccak256(abi.encodePacked(playerChess[activePlayer]))) {
                 row_count++;
                 if (row_count == 3) {
@@ -180,7 +176,7 @@ contract TicTacToe {
         //Console.log("secondJudge", now);
         //玩家所在行达到3个
         //uint8 column_count = 0;
-        for ((uint8 column, uint8 column_count) = (0,0); column < chessboardSize; column++) {
+        for ((uint8 column, uint8 column_count) = (0, 0); column < chessboardSize; column++) {
             if (keccak256(abi.encodePacked(chessboard[player_row][column])) == keccak256(abi.encodePacked(playerChess[activePlayer]))) {
                 column_count++;
                 if (column_count == 3) {
@@ -201,7 +197,7 @@ contract TicTacToe {
         keccak256(abi.encodePacked(chessboard[2][1])) != keccak256(abi.encodePacked(playerChess[activePlayer]))) {
 
             //uint8 diagonalCount = 0;
-            for ((uint8 i, uint8 diagonalCount) = (0,0); i < chessboardSize; i++) {
+            for ((uint8 i, uint8 diagonalCount) = (0, 0); i < chessboardSize; i++) {
                 if (keccak256(abi.encodePacked(chessboard[i][i])) == keccak256(abi.encodePacked(playerChess[activePlayer]))) {
                     diagonalCount++;
                     if (diagonalCount == 3) {
@@ -216,7 +212,7 @@ contract TicTacToe {
 
 
             //uint8 anti_diagonalCount = 0;
-            for ((uint8 j, uint8 anti_diagonalCount) = (0,0); j < chessboardSize; j++) {
+            for ((uint8 j, uint8 anti_diagonalCount) = (0, 0); j < chessboardSize; j++) {
                 if (keccak256(abi.encodePacked(chessboard[j][chessboardSize - j - 1])) == keccak256(abi.encodePacked(playerChess[activePlayer]))) {
                     anti_diagonalCount++;
                     if (anti_diagonalCount == 3) {
