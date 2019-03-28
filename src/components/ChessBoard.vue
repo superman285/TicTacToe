@@ -152,17 +152,20 @@
               switch (gameResult) {
                 case "tie":
                   console.log('阿平局啦');//Toast
-                  this.$store.state.gameFinished = true;
+                  this.$store.state.gameState.gameFinished = true;
+                  this.$store.state.gameState.gameResult = "tie"
                   return;
                   break;
                 case "hostVictory":
                   console.log('啊 host胜利');//Toast
-                  this.$store.state.gameFinished = true;
+                  this.$store.state.gameState.gameFinished = true;
+                  this.$store.state.gameState.gameResult = "HostPlayer"
                   return;
                   break;
                 case "guestVictory":
                   console.log('啊guest胜利');//Toast
-                  this.$store.state.gameFinished = true;
+                  this.$store.state.gameState.gameFinished = true;
+                  this.$store.state.gameState.gameResult = "GuestPlayer"
                   return;
                   break;
                 default:

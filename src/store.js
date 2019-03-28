@@ -262,7 +262,10 @@ export default new Vuex.Store({
     guestPlayer: "",
     chessBoard: [["","",""],["","",""],["","",""]],
     activePlayer: "",
-    gameFinished: false
+    gameState: {
+      gameFinished: false,
+      gameResult: ""
+    }
   },
   getters: {
     currentAccount: state => {

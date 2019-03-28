@@ -42,14 +42,33 @@
     </div>
 
     <Chess-board ref="chessboard" v-if="showChessboard" class="animated bounceInDown"></Chess-board>
-      <!--奖池 tooltip 赢了的拿走-->
-      <label v-if="showChessboard" class="bonuspool button button-glow button-border button-rounded button-highlight"  @click="showbonuspool">
-        💰BonusPool:
-        {{$store.state.gameBonuspool}}
-      </label>
 
 
-    <button v-if="showRestart" class="restart button button-3d button-royal button-rounded animated bounceInUp" @click="restartGame">Restart</button>
+    <!--奖池 加tooltip 赢了的拿走-->
+    <label v-if="showChessboard" class="bonuspool button button-glow button-border button-rounded button-highlight"
+           @click="showbonuspool">
+      💰BonusPool:
+      {{$store.state.gameBonuspool}}
+    </label>
+    <button v-if="showRestart" class="restart button button-3d button-royal button-rounded animated fadeInLeft"
+            @click="restartGame">Restart
+    </button>
+
+    <!--absolute pos-->
+    <div v-if="showVictor" class="result-wrap animated bounceInUp" @click="hideDelay($event)">
+      <div class="game-end">
+        {{$store.state.gameState.gameResult}}
+        <p class="game-end-big">Victory !️</p>
+      </div>
+    </div>
+
+    <div v-if="showTie" class="result-wrap animated bounceInUp" @click="hideDelay($event)">
+      <div class="game-end">
+        Game
+        <p class="game-end-big">Tie !️</p>
+      </div>
+    </div>
+
 
   </div>
 </template>
@@ -73,36 +92,48 @@
         showpool: false,
         bonuspool: 1,
         //showboard: false
-        //showChessboard: false
+        //showChessboard: true
       }),
     computed: {
-      showChessboard(){
+      showChessboard() {
         if (this.$store.state.guestPlayer) {
           return true;
-        }else {
+        } else {
           return false;
         }
         return false;
       },
       showRestart() {
-          return this.$store.state.gameFinished;
+        return this.$store.state.gameState.gameFinished;
       },
       showHost() {
-        if(this.$store.state.hostPlayer && this.$store.state.activePlayer.toLowerCase()==this.$store.state.hostPlayer.toLowerCase()){
+        if (this.$store.state.hostPlayer && this.$store.state.activePlayer.toLowerCase() == this.$store.state.hostPlayer.toLowerCase()) {
           return true;
-        }else {
+        } else {
           return false;
         }
       },
       showGuest() {
-        if(this.$store.state.guestPlayer && this.$store.state.activePlayer.toLowerCase()==this.$store.state.guestPlayer.toLowerCase()){
+        if (this.$store.state.guestPlayer && this.$store.state.activePlayer.toLowerCase() == this.$store.state.guestPlayer.toLowerCase()) {
           return true;
-        }else {
+        } else {
           return false;
         }
+      },
+      showVictor() {
+        return this.$store.state.gameState.gameResult === "HostPlayer" ||
+               this.$store.state.gameState.gameResult === "GuestPlayer"
+      },
+      showTie() {
+        return this.$store.state.gameState.gameResult === "tie"
       }
     },
     methods: {
+      hideDelay(ev){
+        console.log(ev.target);
+        ev.target.classList.remove("bounceInUp");
+        ev.target.classList.add("fadeOutUp");
+      },
       async showbonuspool() {
         console.log('click showbonus');
         this.bonuspool = await this.$store.dispatch("getBonuspool");
@@ -134,15 +165,15 @@
       async joinGame() {
         let joiner = this.$store.getters.currentAccount;
         console.log("joiner", joiner);
-        if(window.ethereum.selectedAddress==this.$store.state.hostPlayer){
+        if (window.ethereum.selectedAddress == this.$store.state.hostPlayer) {
           console.log('Gamecreator cannot join the game!');
           //Toast
           return;
         }
         try {
-          let joinRes = await this.$store.dispatch("joinGame", joiner);
+          var joinRes = await this.$store.dispatch("joinGame", joiner);
         } catch (err) {
-          console.log('加入失败',err);
+          console.log('加入失败', err);
           //toast
         }
         console.log("joinRes", joinRes);
@@ -276,11 +307,13 @@
   .createGame, .joinGame,
   .gamecost {
     width: 100%;
-    padding: 0 .4rem;
-    font-size: 1rem;
+    padding: .1rem .4rem .1rem;
+    font-size: 1.2rem;
     font-weight: 400;
     margin: 1rem auto;
+    font-family: 'Baloo Bhaina';
   }
+
   .gamecost {
     cursor: default;
   }
@@ -298,10 +331,11 @@
 
   .bonuspool {
     margin-top: 2rem;
-    padding: 0 .6rem;
-    font-size: 1rem;
-    font-weight: 500;
+    padding: .1rem .6rem .1rem;
+    font-size: 1.1rem;
+    //line-height: 2rem;
     cursor: default;
+    font-family: 'Baloo Bhaina';
   }
 
   .host-turn {
@@ -309,6 +343,8 @@
       display: flex;
       align-items: flex-end;
       padding: 0;
+      font-family: 'Baloo Bhaina';
+      font-size: 1.2rem;
       img {
         width: 64px;
         height: 64px;
@@ -317,10 +353,39 @@
     }
     border-left: none;
     border-right: none;
-    color: hsl(50, 100%, 75%);
+    color: yellow;
     hr {
       margin: 0;
     }
+  }
+
+  .result-wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+  }
+
+  .game-end {
+    font-size: 2.75rem;
+    text-shadow: 0 0 0.5rem white, 0 0 2rem black;
+    font-family: 'Baloo Bhaina';
+    //color: rgb(255, 251, 230);
+    color: rgb(255, 251, 100);
+    text-align: center;
+    z-index: 1;
+  }
+
+  .game-end-big {
+    //color: rgb(255, 251, 130);
+    color: blue;
+    font-size: 4rem;
+    padding: 0;
+    margin: 0;
   }
 
 </style>
