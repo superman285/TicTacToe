@@ -1,5 +1,5 @@
 <template>
-  <div class="board">
+  <div class="board" @click="shake($event)">
     <div class="column" v-for="column in size">
       <div class="row" v-for="row in size">
         <div
@@ -26,6 +26,20 @@
     data: () => (
       {}),
     methods: {
+      shake(ev){
+        //类数组转数组，或者Array.from(likeArr)
+        console.log('点我摇啊摇',ev);
+        let classList = [...ev.target.classList];
+        console.log(classList);
+        if (classList.includes("board")) {
+          ev.target.classList.remove('animated','bounceInDown');
+          ev.target.classList.add("animated", "tada");
+          setTimeout(()=>{
+            ev.target.classList.remove("animated", "tada");
+          },2000)
+        }
+      },
+
       async getWholeBoard() {
         let wholeBoard = await this.$store.dispatch("getWholeBoard");
         console.log("wholeboard", wholeBoard);
@@ -49,6 +63,7 @@
       },
 
       async restartGame() {
+        //刷新页面即可。。没那么多事儿 因为还需要重新joinGame
         let restarter = this.$store.getters.currentAccount;
         console.log("restarter", restarter);
         let restartRes = await this.$store.dispatch("restartGame", restarter);
@@ -71,6 +86,12 @@
         console.dir(ev.target);
 
         let actPlayer = this.$store.getters.currentAccount;
+
+        if(actPlayer.toLowerCase()!=this.$store.state.activePlayer.toLowerCase()){
+          console.log('不是你的回合');
+          //Toast show
+          return;
+        }
         switch (actPlayer) {
           case this.$store.state.hostPlayer:
             var chess = "o";
@@ -78,17 +99,12 @@
           case this.$store.state.guestPlayer:
             var chess = "x";
             break;
-          /*default:
-            var chess = "o";*/
         }
-
         /*
         * 1.空棋盘 直接交易 下棋
         * 2.棋格有棋子 点到span 直接无事发生
         * 3.棋格有棋子 点到div 判断chessboard这个位置有棋 无事发生
-        *
-        * */
-
+        */
         var piece = ev.target;
         //相当于if(piect.tagName==="DIV"){}
         piece.tagName === "DIV" && (
@@ -99,9 +115,9 @@
             console.log(row, column);
             if (this.$store.state.chessBoard[row][column]) {
               console.log('这儿有棋子,不执行后续下棋行为');
+              //Toastshow
               return;
             }
-
             //避免连续点同一位置 先赋值了 如果后续下棋交易执行失败 catch中 把chessBoard位置再置空串
             this.$store.state.chessBoard[row][column] = chess;
             //交易出结果再把棋子放到棋盘
@@ -112,9 +128,9 @@
                 player:actPlayer
               });
               console.log('setChessRes',setChessRes);
-
             } catch (err) {
               console.log('setChessErr',err);
+              //Toast下棋
               this.$store.state.chessBoard[row][column] = "";
             }
             /*
@@ -135,15 +151,18 @@
               console.log('setChess=>gameResult',gameResult,setChessRes.events);
               switch (gameResult) {
                 case "tie":
-                  console.log('阿平局啦');
+                  console.log('阿平局啦');//Toast
+                  this.$store.state.gameFinished = true;
                   return;
                   break;
                 case "hostVictory":
-                  console.log('啊 host胜利');
+                  console.log('啊 host胜利');//Toast
+                  this.$store.state.gameFinished = true;
                   return;
                   break;
                 case "guestVictory":
-                  console.log('啊guest胜利');
+                  console.log('啊guest胜利');//Toast
+                  this.$store.state.gameFinished = true;
                   return;
                   break;
                 default:
@@ -153,11 +172,8 @@
 
             console.log('结局未出，切换轮次');
             this.$store.state.activePlayer = setChessRes.events.ActivePlayer.returnValues.activePlayerAddr;
-            /*if(this.$store.state.activePlayer=="HostPlayer"){
-              this.$store.state.activePlayer="GuestPlayer";
-            }else {
-              this.$store.state.activePlayer="HostPlayer";
-            }*/
+
+            //考虑用toast来播 下一个轮流的人
 
           })();
 
@@ -221,6 +237,7 @@
     background: hsl(200, 100%, 75%);
     //animation: bounceIn 0.5s;
     color: white;
+    cursor: grab;
   }
 
   .o {

@@ -5,8 +5,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    gameCost: "0.1ETH",
-
+    gameCost: "0.1 ETH",
+    gameBonuspool: "0.2 ETH",
     web3: {},
     contractABI: [
       {
@@ -262,6 +262,7 @@ export default new Vuex.Store({
     guestPlayer: "",
     chessBoard: [["","",""],["","",""],["","",""]],
     activePlayer: "",
+    gameFinished: false
   },
   getters: {
     currentAccount: state => {

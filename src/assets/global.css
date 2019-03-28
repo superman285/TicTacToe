@@ -31,19 +31,17 @@ html {
 
 @media screen and (min-width: 36em) {
   html {
-    font-size: 135%;
+    font-size: 125%;
   }
 }
-
-
 @media screen and (min-width: 75em) {
   html {
-    font-size: 160%;
+    font-size: 140%;
   }
 }
 
 @media screen and (min-width: 136em) {
   html {
-    font-size: 200%;
+    font-size: 160%;
   }
 }
