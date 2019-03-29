@@ -7,11 +7,8 @@ sudo: required
 before_install:
   - npm install
 script:
-  - npm run lint
   - npm test
   - npm run build
-  - npm install truffle -g
-  - truffle test
 after_success:
   - git status -sb
   - git config --global user.name 'superman285'

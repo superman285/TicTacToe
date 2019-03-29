@@ -10,7 +10,7 @@
       <button ref="joinGame" class="joinGame button button-3d button-primary button-pill" @click="joinGame">JoinGame
       </button>
       <br>
-      <button class="tooltip-wrap gamecost button button-3d button-border button-rounded button-highlight" data-balloon="Create or Join the game will cost you 0.1ETH." data-balloon-pos="down">GameCost: {{
+      <button class="gamecost button button-3d button-border button-rounded button-highlight" data-balloon="Create or Join the game will cost you 0.1ETH." data-balloon-pos="down">GameCost: {{
         $store.state.gameCost}}
       </button>
     </section>
@@ -93,7 +93,7 @@
     data: () => (
       {
         showpool: false,
-        bonuspool: 1,
+        //bonuspool: 1,
         //showChessboard: true
       }),
     computed: {
