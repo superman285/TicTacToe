@@ -252,9 +252,9 @@ export default new Vuex.Store({
       }
     ],
     //ganache privateNet deploy with truffle
-    contractAddr: "0xB4e112E9AAb55A3F93100114543627C8482dadF7",
+    //contractAddr: "0xB4e112E9AAb55A3F93100114543627C8482dadF7",
     //rinkeby deploy with truffle
-    //contractAddr: "0xfC26E0B10D67CC8F89667fACd94fb87634a6b1D2",
+    contractAddr: "0xfC26E0B10D67CC8F89667fACd94fb87634a6b1D2",
     contractObj: {},
     //can use
     //currentAccount: window.ethereum.selectedAddress

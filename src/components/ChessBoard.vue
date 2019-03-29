@@ -39,7 +39,6 @@
           },2000)
         }
       },
-
       async getWholeBoard() {
         let wholeBoard = await this.$store.dispatch("getWholeBoard");
         console.log("wholeboard", wholeBoard);
@@ -48,27 +47,6 @@
         let bonuspool = await this.$store.dispatch("getBonuspool");
         console.log("bonuspool", bonuspool);
       },
-      async createGame() {
-        let creator = this.$store.getters.currentAccount;
-        console.log("creator", creator);
-        let createRes = await this.$store.dispatch("createGame");
-        console.log("createRes", createRes);
-      },
-      async joinGame() {
-        let joiner = this.$store.getters.currentAccount;
-        console.log("joiner", joiner);
-        let joinRes = await this.$store.dispatch("joinGame", joiner);
-        console.log("joinRes", joinRes);
-        console.log('activePlayer', joinRes.logs[1].args.activePlayerAddr);
-      },
-
-      async restartGame() {
-        //刷新页面即可。。没那么多事儿 因为还需要重新joinGame
-        let restarter = this.$store.getters.currentAccount;
-        console.log("restarter", restarter);
-        let restartRes = await this.$store.dispatch("restartGame", restarter);
-      },
-
       async getActivePlayer() {
         let activePlayer = await this.$store.dispatch("getActivePlayer");
         console.log("activePlayer", activePlayer);
@@ -81,7 +59,6 @@
         let gameResult = await this.$store.dispatch("getGameResult");
         console.log("gameResult", gameResult);
       },
-
       async setChess(ev) {
         console.dir(ev.target);
 
@@ -90,6 +67,11 @@
         if(actPlayer.toLowerCase()!=this.$store.state.activePlayer.toLowerCase()){
           console.log('不是你的回合');
           //Toast show
+          iziToast.info({
+            message: "It's not your Turn !",
+            timeout: 2000,
+            color: "red"
+          });
           return;
         }
         switch (actPlayer) {
@@ -115,7 +97,11 @@
             console.log(row, column);
             if (this.$store.state.chessBoard[row][column]) {
               console.log('这儿有棋子,不执行后续下棋行为');
-              //Toastshow
+              /*iziToast.error({
+                title: "Error",
+                message: "You can not chess here !",
+                timeout: 2000,
+              });*/
               return;
             }
             //避免连续点同一位置 先赋值了 如果后续下棋交易执行失败 catch中 把chessBoard位置再置空串
@@ -128,23 +114,21 @@
                 player:actPlayer
               });
               console.log('setChessRes',setChessRes);
+              //棋子下到棋盘上
+              piece.classList.add(chess, "animated", "flash");
+              /*setTimeout(() => {
+              target.classList.remove('animated', 'pulse')
+              }, 3000);*/
             } catch (err) {
               console.log('setChessErr',err);
-              //Toast下棋
+              //Toast下棋失败
+              iziToast.warning({
+                message: "Sorry. The deal failed !",
+                timeout: 2000,
+                color: "red"
+              });
               this.$store.state.chessBoard[row][column] = "";
             }
-            /*
-            根据setChessRes中的logs的event 可判断胜负了 logs[0].args.gameResult | 'tie' 'hostVictory' 'guestVictory'
-            if(tie | victory){
-            弹提示文字浮层
-            return;}
-            */
-            //棋子下到棋盘上
-            piece.classList.add(chess, "animated", "flash");
-            /*setTimeout(() => {
-            target.classList.remove('animated', 'pulse')
-            }, 3000);*/
-
 
             if("GameFinished" in setChessRes.events){
               var gameResult = setChessRes.events.GameFinished.returnValues.gameResult;
@@ -153,30 +137,51 @@
                 case "tie":
                   console.log('阿平局啦');//Toast
                   this.$store.state.gameState.gameFinished = true;
-                  this.$store.state.gameState.gameResult = "tie"
+                  this.$store.state.gameState.gameResult = "tie";
+                  setTimeout(()=>{
+                    iziToast.show({
+                      message: "You2 share the whole BonusPool equally !",
+                      timeout: 5000,
+                      color: "yellow"
+                    });
+                  },3000);
                   return;
                   break;
                 case "hostVictory":
                   console.log('啊 host胜利');//Toast
                   this.$store.state.gameState.gameFinished = true;
                   this.$store.state.gameState.gameResult = "HostPlayer"
+                  setTimeout(()=>{
+                    iziToast.show({
+                      title: "Congratulation",
+                      message: "HostPlayer won the whole BonusPool !",
+                      timeout: 5000,
+                      color: "yellow"
+                    });
+                  },3000);
                   return;
                   break;
                 case "guestVictory":
                   console.log('啊guest胜利');//Toast
                   this.$store.state.gameState.gameFinished = true;
-                  this.$store.state.gameState.gameResult = "GuestPlayer"
+                  this.$store.state.gameState.gameResult = "GuestPlayer";
+                  setTimeout(()=>{
+                    iziToast.show({
+                      title: "Congratulation",
+                      message: "GuestPlayer won the whole BonusPool !",
+                      timeout: 5000,
+                      color: "yellow"
+                    });
+                  },3000)
                   return;
                   break;
-                default:
-                  console.log('gameresult是个啥',gameResult);
               }
             }
 
             console.log('结局未出，切换轮次');
             this.$store.state.activePlayer = setChessRes.events.ActivePlayer.returnValues.activePlayerAddr;
 
-            //考虑用toast来播 下一个轮流的人
+            //考虑用toast来播 下一个轮流的人 改成v-show+animated了
 
           })();
 
@@ -240,7 +245,7 @@
     background: hsl(200, 100%, 75%);
     //animation: bounceIn 0.5s;
     color: white;
-    cursor: grab;
+    cursor: grab!important;
   }
 
   .o {

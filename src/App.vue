@@ -10,7 +10,7 @@
       <button ref="joinGame" class="joinGame button button-3d button-primary button-pill" @click="joinGame">JoinGame
       </button>
       <br>
-      <button class="gamecost button button-3d button-border button-rounded button-highlight">GameCost: {{
+      <button class="tooltip-wrap gamecost button button-3d button-border button-rounded button-highlight" data-balloon="Create or Join the game will cost you 0.1ETH." data-balloon-pos="down">GameCost: {{
         $store.state.gameCost}}
       </button>
     </section>
@@ -25,8 +25,9 @@
 
     <div v-show="showHost" class="host-turn animated bounceInDown">
       <div class="avatar">
-        <img src="./assets/host.png" alt="">
+        <img class="headico" src="./assets/host.png" alt="">
         {{$store.getters.activeTurn}}
+        <img class="chessico" src="./assets/chesso.png" alt="">
       </div>
       <hr>
       <span>{{$store.state.activePlayer}}</span>
@@ -34,8 +35,9 @@
 
     <div v-show="showGuest" class="host-turn animated bounceInDown">
       <div class="avatar">
-        <img src="./assets/guest.png" alt="">
+        <img class="headico" src="./assets/guest.png" alt="">
         {{$store.getters.activeTurn}}
+        <img class="chessico" src="./assets/chessx.png" alt="">
       </div>
       <hr>
       <span>{{$store.state.activePlayer}}</span>
@@ -45,12 +47,12 @@
 
 
     <!--奖池 加tooltip 赢了的拿走-->
-    <label v-if="showChessboard" class="bonuspool button button-glow button-border button-rounded button-highlight"
-           @click="showbonuspool">
+    <label v-if="showChessboard" class="bonuspool button button-glow button-border button-rounded button-highlight" data-balloon="The Victor can take away the whole Bonuspool !" data-balloon-pos="down"
+           @click="showbonuspool" >
       💰BonusPool:
       {{$store.state.gameBonuspool}}
     </label>
-    <button v-if="showRestart" class="restart button button-3d button-royal button-rounded animated fadeInLeft"
+    <button v-if="showRestart" class="restart button button-3d button-royal button-rounded"
             @click="restartGame">Restart
     </button>
 
@@ -68,6 +70,7 @@
         <p class="game-end-big">Tie !️</p>
       </div>
     </div>
+
 
 
   </div>
@@ -91,7 +94,6 @@
       {
         showpool: false,
         bonuspool: 1,
-        //showboard: false
         //showChessboard: true
       }),
     computed: {
@@ -156,11 +158,24 @@
         console.log('activePlayer', activePlayer);
       },
       async createGame() {
-        this.showChessboard = true;
         let creator = this.$store.getters.currentAccount;
         console.log("creator", creator);
-        let createRes = await this.$store.dispatch("createGame");
-        console.log("createRes", createRes);
+        try {
+          let createRes = await this.$store.dispatch("createGame");
+          console.log("createRes", createRes);
+          //由于
+          iziToast.success({
+            message: "Create game success !",
+            timeout: 2000,
+          });
+        } catch (err) {
+          console.log('create err',err);
+          iziToast.warning({
+            message: "Create game failed !",
+            timeout: 2000,
+            color: "red"
+          });
+        }
       },
       async joinGame() {
         let joiner = this.$store.getters.currentAccount;
@@ -168,19 +183,33 @@
         if (window.ethereum.selectedAddress == this.$store.state.hostPlayer) {
           console.log('Gamecreator cannot join the game!');
           //Toast
+          iziToast.error({
+            message: "You can not join the game !",
+            timeout: 2000,
+          });
           return;
         }
         try {
-          var joinRes = await this.$store.dispatch("joinGame", joiner);
+          let joinRes = await this.$store.dispatch("joinGame", joiner);
+          console.log("joinRes", joinRes);
+          console.log('activePlayer', joinRes.events.ActivePlayer.returnValues.activePlayerAddr, this.$store.state.activePlayer);
+          iziToast.success({
+            message: "Join game success !",
+            timeout: 2000,
+          });
         } catch (err) {
           console.log('加入失败', err);
           //toast
+          iziToast.warning({
+            message: "Join game failed !",
+            timeout: 2000,
+            color: "red"
+          });
         }
-        console.log("joinRes", joinRes);
-        console.log('activePlayer', joinRes.events.ActivePlayer.returnValues.activePlayerAddr, this.$store.state.activePlayer);
       },
 
       async restartGame() {
+        //刷新页面即可。。没那么多事儿 因为还需要重新joinGame
         window.location.reload();
         /*let restarter = this.$store.getters.currentAccount;
         console.log("restarter", restarter);
@@ -319,10 +348,11 @@
   }
 
   .restart {
-    margin: 1rem auto;
-    padding: 0 4.5rem;
-    font-size: 1rem;
+    margin: 1.5rem auto;
+    padding: .1rem 4rem .1rem;
+    font-size: 1.2rem;
     font-weight: 400;
+    font-family: 'Baloo Bhaina';
   }
 
   .gameRules {
@@ -345,9 +375,18 @@
       padding: 0;
       font-family: 'Baloo Bhaina';
       font-size: 1.2rem;
-      img {
-        width: 64px;
-        height: 64px;
+      .headico {
+        width: 3.5rem;
+        height: 3.5rem;
+      }
+      .chessico {
+        width:2rem;
+        height: 2rem;
+        margin-left: 1rem;
+        margin-bottom: .3rem;
+        border-radius: .3rem;
+        box-shadow: inset 0.3em 0.3em 0.3em rgba(255, 255, 255, 0.5),
+        inset -0.3em -0.3em 0.3em rgba(0, 0, 0, 0.35), 0 0 0.3em rgb(30, 30, 30);
       }
       color: hsl(50, 100%, 75%);
     }
@@ -387,5 +426,6 @@
     padding: 0;
     margin: 0;
   }
+
 
 </style>
