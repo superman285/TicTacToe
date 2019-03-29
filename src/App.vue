@@ -160,13 +160,16 @@
       async createGame() {
         let creator = this.$store.getters.currentAccount;
         console.log("creator", creator);
+        let web3 = this.$store.state.web3;
         try {
           let createRes = await this.$store.dispatch("createGame");
+          iziToast.destroy();
+          console.log('toast destroy');
           console.log("createRes", createRes);
           //由于
           iziToast.success({
             message: "Create game success !",
-            timeout: 2000,
+            timeout: 3000,
           });
         } catch (err) {
           console.log('create err',err);
@@ -191,6 +194,7 @@
         }
         try {
           let joinRes = await this.$store.dispatch("joinGame", joiner);
+          iziToast.destroy();
           console.log("joinRes", joinRes);
           console.log('activePlayer', joinRes.events.ActivePlayer.returnValues.activePlayerAddr, this.$store.state.activePlayer);
           iziToast.success({

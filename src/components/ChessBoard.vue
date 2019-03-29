@@ -97,11 +97,6 @@
             console.log(row, column);
             if (this.$store.state.chessBoard[row][column]) {
               console.log('这儿有棋子,不执行后续下棋行为');
-              /*iziToast.error({
-                title: "Error",
-                message: "You can not chess here !",
-                timeout: 2000,
-              });*/
               return;
             }
             //避免连续点同一位置 先赋值了 如果后续下棋交易执行失败 catch中 把chessBoard位置再置空串
@@ -113,6 +108,7 @@
                 column,
                 player:actPlayer
               });
+              iziToast.destroy();
               console.log('setChessRes',setChessRes);
               //棋子下到棋盘上
               piece.classList.add(chess, "animated", "flash");
