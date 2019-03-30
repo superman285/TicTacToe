@@ -22,7 +22,7 @@ after_success:
   - cd sshpass-1.06
   - ./configure
   - sudo make install
-  - sshpass -p ${SSHPWD} ssh -q -l ubuntu -p 22 154.8.215.126
+  - sshpass -p "${SSHPWD}" ssh -q -l ubuntu -p 22 154.8.215.126
   - cd ~/WebProject/MyFavorProject/TicTacToe/
   - svn update
 
