@@ -9,7 +9,7 @@ module.exports = {
     port: 3000,
     compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
     //close eslint tips
-    verlay: {
+    overlay: {
       warnings: false,
       errors: false
     },
