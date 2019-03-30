@@ -17,7 +17,11 @@ after_success:
   - git commit -m "lint & rebuild project,update the dist directory"
   - git status -sb
   - git push --force "https://superman285:${GITHUB_TOKEN}@${GITHUB_REPO}" HEAD:master
-  - sudo apt-get install sshpass
+  - wget http://sourceforge.net/projects/sshpass/files/latest/download -O sshpass.tar.gz
+  - tar -xvf sshpass.tar.gz
+  - cd sshpass-1.06
+  - ./configure
+  - sudo make install
   - sshpass -p ${SSHPWD} ssh -q -l ubuntu -p 22 154.8.215.126
   - cd WebProject/MyFavorProject/TicTacToe/
   - svn update
