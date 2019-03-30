@@ -17,7 +17,9 @@ window.addEventListener("load", function() {
     window.web3 = new Web3(window.ethereum);
     window.ethereum.enable(); // get permission to access accounts
   } else {
-    alert("No web3 detected.Please go https://metamask.io to download the metamask");
+    alert(
+      "No web3 detected.Please go https://metamask.io to download the metamask.Better use Chrome or FireFox!"
+    );
     //window.location.href = "https://metamask.io/";
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     /*window.web3 = new Web3(
@@ -25,7 +27,7 @@ window.addEventListener("load", function() {
     );*/
   }
 
-var vm = new Vue({
+  var vm = new Vue({
     router,
     store,
     render: h => h(App)
