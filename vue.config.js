@@ -5,6 +5,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   publicPath: "./",
+
   devServer: {
     port: 3000,
     compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
@@ -13,7 +14,7 @@ module.exports = {
       warnings: false,
       errors: false
     },
-    lintOnSave: false
+    lintOnSave: false,
   },
   productionSourceMap: false,
   configureWebpack: {
