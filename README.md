@@ -1,5 +1,6 @@
 # TicTacToe New
 [![Build Status](https://www.travis-ci.org/superman285/TicTacToe.svg?branch=master)](https://www.travis-ci.org/superman285/TicTacToe)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1882a7fa14d24143ad9d778af855d646)](https://www.codacy.com/app/superman285/TicTacToe?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=superman285/TicTacToe&amp;utm_campaign=Badge_Grade)
 
 ## Project setup
 ```
