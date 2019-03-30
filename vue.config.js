@@ -8,6 +8,7 @@ module.exports = {
   devServer: {
     port: 3000,
     compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
+    //close eslint tips
     verlay: {
       warnings: false,
       errors: false
