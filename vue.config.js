@@ -8,15 +8,16 @@ module.exports = {
 
   devServer: {
     port: 3000,
-    compress: true, // 服务器返回浏览器的时候是否启动gzip压缩
-    //close eslint tips
+    compress: true
+    // 服务器返回浏览器的时候是否启动gzip压缩
+    /*//close eslint tips
     overlay: {
       warnings: false,
       errors: false
     },
-    lintOnSave: false,
+    lintOnSave: false,*/
   },
-  productionSourceMap: false,
+  /*productionSourceMap: false,
   configureWebpack: {
     mode: "production",
     optimization: {
@@ -37,5 +38,5 @@ module.exports = {
       new CompressionPlugin()
       //new BundleAnalyzerPlugin(),
     ]
-  }
+  }*/
 };
