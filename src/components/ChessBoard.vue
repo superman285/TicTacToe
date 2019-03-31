@@ -23,7 +23,9 @@ export default {
       default: 3
     }
   },
-  data: () => ({}),
+  data: () => ({
+    chessActionFlag: false,
+  }),
   methods: {
     shake(ev) {
       //类数组转数组，或者Array.from(likeArr)
@@ -87,6 +89,7 @@ export default {
        * 1.空棋盘 直接交易 下棋
        * 2.棋格有棋子 点到span 直接无事发生
        * 3.棋格有棋子 点到div 判断chessboard这个位置有棋 无事发生
+       * 4.棋格无棋子 当前回合点击下过了 只能等到下棋结果出来才可行动
        */
       var piece = ev.target;
       //相当于if(piect.tagName==="DIV"){}
@@ -96,10 +99,24 @@ export default {
           var row = piece.dataset.pos.substr(0, 1),
             column = piece.dataset.pos.substr(2, 1);
           console.log(row, column);
+
+          //有棋子不执行后续逻辑判断,避免行动标记出错
           if (this.$store.state.chessBoard[row][column]) {
             console.log("这儿有棋子,不执行后续下棋行为");
             return;
           }
+
+          //判当前回合是否已行动
+          if (this.chessActionFlag) {
+            iziToast.error({
+              message: "You have chessed. Please wait !",
+              timeout: 3000,
+            });
+            return;
+          }
+          //标记当前回合行动过
+          this.chessActionFlag = true;
+
           //避免连续点同一位置 先赋值了 如果后续下棋交易执行失败 catch中 把chessBoard位置再置空串
           this.$store.state.chessBoard[row][column] = chess;
           //交易出结果再把棋子放到棋盘
@@ -116,6 +133,10 @@ export default {
             /*setTimeout(() => {
               target.classList.remove('animated', 'pulse')
               }, 3000);*/
+
+            //重置回合行动标记,下回合可继续行动
+            this.chessActionFlag = false;
+
           } catch (err) {
             console.log("setChessErr", err);
             //Toast下棋失败
@@ -125,6 +146,7 @@ export default {
               color: "red"
             });
             this.$store.state.chessBoard[row][column] = "";
+            this.chessActionFlag = false;
           }
 
           if ("GameFinished" in setChessRes.events) {
@@ -179,7 +201,6 @@ export default {
           console.log("结局未出，切换轮次");
           this.$store.state.activePlayer =
             setChessRes.events.ActivePlayer.returnValues.activePlayerAddr;
-
           //考虑用toast来播 下一个轮流的人 改成v-show+animated了
         })();
 

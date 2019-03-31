@@ -15,8 +15,8 @@ module.exports = {
       warnings: false,
       errors: false
     },
-    lintOnSave: false,
   },
+  lintOnSave: false,
   productionSourceMap: false,
   configureWebpack: {
     mode: "production",
