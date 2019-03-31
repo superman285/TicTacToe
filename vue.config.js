@@ -17,7 +17,7 @@ module.exports = {
     },
     lintOnSave: false,*/
   },
-  /*productionSourceMap: false,
+  productionSourceMap: false,
   configureWebpack: {
     mode: "production",
     optimization: {
@@ -38,5 +38,5 @@ module.exports = {
       new CompressionPlugin()
       //new BundleAnalyzerPlugin(),
     ]
-  }*/
+  }
 };
