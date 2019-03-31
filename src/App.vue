@@ -117,8 +117,17 @@ export default {
   mounted: function() {
     //绑web3报错https://cn.vuejs.org/v2/api/#data
     //vue和web3的冲突
-    this.$store.state.web3 = window.web3;
-    console.log("aftermounted", window.web3 == this.$store.state.web3);
+    try {
+      this.$store.state.web3 = window.web3;
+      console.log("aftermounted", window.web3 == this.$store.state.web3);
+    } catch (err) {
+      console.log('vue和web3冲突err',err);
+      if (String(err).includes("Duplicated method __ob__")) {
+        this.$store.state.web3 = window.web3;
+        console.log("aftermounted", window.web3 == this.$store.state.web3);
+      }
+    }
+    
   },
   data: () => ({
     showpool: false
@@ -201,7 +210,7 @@ export default {
       console.log("creator", creator);
       let web3 = this.$store.state.web3;
       try {
-        let createRes = await this.$store.dispatch("createGame");
+        var createRes = await this.$store.dispatch("createGame");
         iziToast.destroy();
         console.log("toast destroy");
         console.log("createRes", createRes);
@@ -211,12 +220,24 @@ export default {
           timeout: 3000
         });
       } catch (err) {
-        console.log("create err???", err);
-        iziToast.warning({
-          message: "Create game failed !",
-          timeout: 2000,
-          color: "red"
-        });
+        console.log("create err???",err,typeof err,String(err));
+        if (String(err).includes("Duplicated method __ob__")) {
+          iziToast.destroy();
+          console.log("err中toast destroy");
+          console.log("err中createRes", createRes);
+          //由于
+          iziToast.success({
+            message: "Create game success !",
+            timeout: 3000
+          });
+        }else{
+          iziToast.warning({
+            message: "Create game failed !",
+            timeout: 2000,
+            color: "red"
+          });
+        }
+
       }
     },
     async joinGame() {

@@ -8,14 +8,14 @@ module.exports = {
 
   devServer: {
     port: 3000,
-    compress: true
     // 服务器返回浏览器的时候是否启动gzip压缩
-    /*//close eslint tips
+    compress: true,
+    //close eslint tips
     overlay: {
       warnings: false,
       errors: false
     },
-    lintOnSave: false,*/
+    lintOnSave: false,
   },
   productionSourceMap: false,
   configureWebpack: {

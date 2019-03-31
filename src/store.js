@@ -374,6 +374,7 @@ export default new Vuex.Store({
         });
       });
       store.commit("setHostPlayer", from);
+      //不要在app.vue获取到实例后再设置合约实例，直接在此处提交完就设置 更保险
       store.commit("setContractObj", newContractObj);
       return newContractObj;
     },
