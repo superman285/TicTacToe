@@ -26,9 +26,9 @@ module.exports = {
         new TerserPlugin({
           terserOptions: {
             compress: {
-              warnings: false,
+              /*warnings: false,
               drop_debugger: true,
-              drop_console: true
+              drop_console: true*/
             }
           }
         })
