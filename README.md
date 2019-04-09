@@ -4,6 +4,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/superman285/TicTacToe.svg)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/superman285/TicTacToe.svg)
 ![GitHub madein china](https://img.shields.io/badge/made%20in-China-blueviolet.svg)
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg" alt="996.icu"></a>
 
 
 ## Project setup
